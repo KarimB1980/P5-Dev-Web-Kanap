@@ -87,18 +87,19 @@ fetch('http://localhost:3000/api/products')
 
         for (let canap of canapeDansLocalstorage) {
           if (canap._id != id || canap.couleur != couleurSelectionnee) {
-            canap.quantite = quantiteSelectionnee
+            canap.quantite = quantiteSelectionnee,
             quantite = canap.quantite
           }
           else if (canap._id == id && canap.couleur == couleurSelectionnee) {
-            canap.quantite = canap.quantite + quantiteSelectionnee
-            quantite = canap.quantite
+            canap.quantite = parseFloat(canap.quantite) + parseFloat(quantiteSelectionnee),
+            quantite = canap.quantite   
           }
-        }  
+        }
+
         canapeDansLocalstorage.push(optionsCanape);
         localStorage.setItem("canapes",JSON.stringify(canapeDansLocalstorage));
-        console.log[canapeDansLocalstorage];     
-      } 
+        console.log[canapeDansLocalstorage];
+      }
 
       // si il n'y a pas de produits présents dans localstorage
       else {
