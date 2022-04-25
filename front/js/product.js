@@ -86,19 +86,29 @@ fetch('http://localhost:3000/api/products')
       if (canapeDansLocalstorage) {
 
         for (let canap of canapeDansLocalstorage) {
-          if (canap._id != id || canap.couleur != couleurSelectionnee) {
+          if (canap._id == id && canap.couleur == couleurSelectionnee) {
+            canap.quantite = parseInt(canap.quantite) + parseInt(quantiteSelectionnee),
+            //quanti = canap.quantite
+            quantite = ""
+            quantite += canap.quantite
+            quantite += ""
+            localStorage.setItem("canapes",JSON.stringify(canapeDansLocalstorage));
+            console.log[canapeDansLocalstorage];
+          }
+          /*if (canap._id != id || canap.couleur != couleurSelectionnee) {
             canap.quantite = quantiteSelectionnee,
             quantite = canap.quantite
-          }
-          else if (canap._id == id && canap.couleur == couleurSelectionnee) {
-            canap.quantite = parseFloat(canap.quantite) + parseFloat(quantiteSelectionnee),
-            quantite = canap.quantite   
+            localStorage.setItem("canapes",JSON.stringify(canapeDansLocalstorage));
+            console.log[canapeDansLocalstorage];*/
+
+        }
+        for (let canap of canapeDansLocalstorage) {
+          if (canap._id != id || canap.couleur != couleurSelectionnee) {
+            canapeDansLocalstorage.push(optionsCanape);
+            localStorage.setItem("canapes",JSON.stringify(canapeDansLocalstorage));
+            console.log[canapeDansLocalstorage];
           }
         }
-
-        canapeDansLocalstorage.push(optionsCanape);
-        localStorage.setItem("canapes",JSON.stringify(canapeDansLocalstorage));
-        console.log[canapeDansLocalstorage];
       }
 
       // si il n'y a pas de produits présents dans localstorage
