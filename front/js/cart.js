@@ -121,21 +121,45 @@ if (localStorage.getItem("canapes") != null) {
       }
       else if (supprimZero.value > 0) {
         for (i = 0; i < ajoutCanape.length; i++) {
-          console.log("test réussi")
-          {
-              if (idSupprim.dataset.id == ajoutCanape[i]._id && idSupprim.dataset.color == ajoutCanape[i].couleur) {
-              ajoutCanape[i].quantite = parseInt(supprimZero.value);
+          if (idSupprim.dataset.id == ajoutCanape[i]._id && idSupprim.dataset.color == ajoutCanape[i].couleur) {
+          ajoutCanape[i].quantite = parseInt(supprimZero.value);
 
-              if(ajoutCanape[i].quantite <= 0 || ajoutCanape[i].quantite >= 101) {
-                alert("Veuillez entrer une valeur minimum 1 et maximum 100");
-                return false;
-              }
-
-              localStorage.setItem("canapes", JSON.stringify(ajoutCanape))
+            if(ajoutCanape[i].quantite <= 0 || ajoutCanape[i].quantite >= 101) {
+              alert("Veuillez entrer une valeur minimum 1 et maximum 100");
+              return false;
             }
+          localStorage.setItem("canapes", JSON.stringify(ajoutCanape));
+          location.reload();
           }
         }
       }
     });
   });
+
+  // Calcul de quantité totale d'articles présents dans le panier
+  let totalArticles = [];
+
+  for (i = 0; i < ajoutCanape.length; i++) {
+    let totalCanapes = ajoutCanape[i].quantite;
+    totalArticles.push(totalCanapes);
+  } 
+    const reducer = (accumulator, currentValue) => accumulator + currentValue;
+    const totalCanap = totalArticles.reduce(reducer);
+
+    // Injection du nouveau code html "quantité totale d'articles" dans le DOM
+    document.querySelector('#totalQuantity').innerHTML = totalCanap;
+  
+
+  // Calcul du prix total das articles présents dans le panier
+  let totalPrixArticles = [];
+
+  for (i = 0; i < ajoutCanape.length; i++) {
+    let totalPrixCanapes = ajoutCanape[i].quantite * ajoutCanape[i].prix;
+    totalPrixArticles.push(totalPrixCanapes);
+  } 
+    const reducers = (accumulator, currentValue) => accumulator + currentValue;
+    const totalPrixCanap = totalPrixArticles.reduce(reducers);
+
+    // Injection du nouveau code html "prix total" dans le DOM
+    document.querySelector('#totalPrice').innerHTML = totalPrixCanap;
 }

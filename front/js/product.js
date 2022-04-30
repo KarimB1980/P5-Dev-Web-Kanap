@@ -80,7 +80,7 @@ fetch('http://localhost:3000/api/products')
           return false;
       }
 
-      //Fonction validation ded l'ajout des canapés dans le panier
+      //Fonction validation de l'ajout des canapés dans le panier
       const validation= () => {
         if(window.confirm( `canapé: ${id} couleur: ${couleurSelectionnee} quantité: ${quantiteSelectionnee} a bien été ajouté au panier. 
         Pour consulter le panier, appuyez sur OK sinon appuyez sur ANNULER pour revenir à l'accueil et continuer vos achats.`)){
