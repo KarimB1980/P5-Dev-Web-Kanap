@@ -5,14 +5,12 @@ fetch('http://localhost:3000/api/products')
   })
   // Création de la fonction qui génère le résultat de la requète API au format json, de la récupération de l'ID dans l'url ainsi que du code html pour afficher les détails du canapé, sélectionner une couleur et une quantité
   .then(function(donnees) {
-    console.log(donnees);
+    //console.log(donnees);
 
     // Récupération de l'ID dans l'url
     let urlcourante = document.location.href;
-    console.log(urlcourante);
     let url = new URL(urlcourante);
     let id = url.searchParams.get("id");
-    console.log(id)
 
     let imageCanape = '';
 
@@ -41,8 +39,6 @@ fetch('http://localhost:3000/api/products')
           listeCouleurs.innerHTML=couleur;
           menuDeroulant.appendChild(listeCouleurs);
         }
-
-        console.log(titre, prix, description, image, altImage);
       }
     }
 
@@ -55,7 +51,6 @@ fetch('http://localhost:3000/api/products')
     // Création des variables pour la quantité de canapés et la couleur choisie
     document.getElementById("addToCart").onclick = function () {
 
-      //function validateForm()  {
       var selectCouleur = document.getElementById("colors");
       var couleurSelectionnee = selectCouleur.options[selectCouleur.selectedIndex].text;
       const quantiteSelectionnee = document.getElementById("quantity").value;
@@ -63,15 +58,18 @@ fetch('http://localhost:3000/api/products')
       let optionsCanape = {
         _id: id,
         couleur: couleurSelectionnee,
-        quantite: quantiteSelectionnee,
+        quantite: parseInt(quantiteSelectionnee),
+        prix,
+        titre,
+        description,
+        image,
+        altImage
       };
-      console.log(optionsCanape);
 
       // Local storage
       // stockage de l'id, de la couleur et de la quantité de canapés
       // JSON.parse pour convertir les données au format JSON
       let canapeDansLocalstorage = JSON.parse(localStorage.getItem("canapes"));
-      console.log(canapeDansLocalstorage);
 
       if(quantiteSelectionnee <= 0 || quantiteSelectionnee >= 101) {
         alert("Veuillez entrer une valeur minimum 1 et maximum 100");
@@ -82,42 +80,47 @@ fetch('http://localhost:3000/api/products')
           return false;
       }
 
-      // si des produits sont déjà présents dans localstorage
-      if (canapeDansLocalstorage) {
-
-        for (let canap of canapeDansLocalstorage) {
-          if (canap._id == id && canap.couleur == couleurSelectionnee) {
-            canap.quantite = parseInt(canap.quantite) + parseInt(quantiteSelectionnee),
-            //quanti = canap.quantite
-            quantite = ""
-            quantite += canap.quantite
-            quantite += ""
-            localStorage.setItem("canapes",JSON.stringify(canapeDansLocalstorage));
-            console.log[canapeDansLocalstorage];
-          }
-          /*if (canap._id != id || canap.couleur != couleurSelectionnee) {
-            canap.quantite = quantiteSelectionnee,
-            quantite = canap.quantite
-            localStorage.setItem("canapes",JSON.stringify(canapeDansLocalstorage));
-            console.log[canapeDansLocalstorage];*/
-
-        }
-        for (let canap of canapeDansLocalstorage) {
-          if (canap._id != id || canap.couleur != couleurSelectionnee) {
-            canapeDansLocalstorage.push(optionsCanape);
-            localStorage.setItem("canapes",JSON.stringify(canapeDansLocalstorage));
-            console.log[canapeDansLocalstorage];
-          }
+      //Fonction validation ded l'ajout des canapés dans le panier
+      const validation= () => {
+        if(window.confirm( `canapé: ${id} couleur: ${couleurSelectionnee} quantité: ${quantiteSelectionnee} a bien été ajouté au panier. 
+        Pour consulter le panier, appuyez sur OK sinon appuyez sur ANNULER pour revenir à l'accueil et continuer vos achats.`)){
+          window.location.href = "cart.html";
+        }else{
+          window.location.href = "index.html";
         }
       }
 
-      // si il n'y a pas de produits présents dans localstorage
-      else {
+      // Si aucun produit n'est présent dans localstorage
+      if (canapeDansLocalstorage == null) {
         canapeDansLocalstorage = [];
         canapeDansLocalstorage.push(optionsCanape);
-        localStorage.setItem("canapes",JSON.stringify(canapeDansLocalstorage));
-        console.log[canapeDansLocalstorage];
+        localStorage.setItem("canapes", JSON.stringify(canapeDansLocalstorage));
+        validation()
+      }
+      // Si des produits sont déjà présents dans localstorage
+      else if (canapeDansLocalstorage != null) {
+        for (i = 0; i < canapeDansLocalstorage.length; i++) {
+        // Si des canapés ayant le même id et la même couleur sont déjà présent dans le localStorage
+          if (canapeDansLocalstorage[i]._id == id && canapeDansLocalstorage[i].couleur == couleurSelectionnee) {
+            return(
+              canapeDansLocalstorage[i].quantite = parseInt(quantiteSelectionnee) + parseInt(canapeDansLocalstorage[i].quantite),
+              localStorage.setItem("canapes", JSON.stringify(canapeDansLocalstorage)),
+              validation()
+            )
+          }
+        }
+        // Si des canapés ayant le même id ou la même couleur ne sont pas présents dans le localStorage
+        for (i = 0; i < canapeDansLocalstorage.length; i++) {
+          if (canapeDansLocalstorage[i]._id != id || canapeDansLocalstorage[i].couleur != couleurSelectionnee) {
+            return(
+              canapeDansLocalstorage.push(optionsCanape),
+              localStorage.setItem("canapes", JSON.stringify(canapeDansLocalstorage)),
+              validation()
+            )
+          }
+        }  
       }
     }
   })
   .catch(err => console.log("Erreur : " + err));
+
