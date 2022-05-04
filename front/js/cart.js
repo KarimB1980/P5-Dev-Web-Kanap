@@ -115,7 +115,7 @@ if (localStorage.getItem("canapes") != null) {
           if (idSupprim.dataset.id != cana._id || idSupprim.dataset.color != cana.couleur) {
             return true
           }
-        });   
+        });
       localStorage.setItem("canapes", JSON.stringify(plusieursCanapes));
       location.reload();
       }
@@ -136,19 +136,18 @@ if (localStorage.getItem("canapes") != null) {
     });
   });
 
-  // Calcul de quantité totale d'articles présents dans le panier
+  // Calcul de la quantité totale d'articles présents dans le panier
   let totalArticles = [];
 
   for (i = 0; i < ajoutCanape.length; i++) {
     let totalCanapes = ajoutCanape[i].quantite;
     totalArticles.push(totalCanapes);
-  } 
+  }
     const reducer = (accumulator, currentValue) => accumulator + currentValue;
     const totalCanap = totalArticles.reduce(reducer);
 
     // Injection du nouveau code html "quantité totale d'articles" dans le DOM
     document.querySelector('#totalQuantity').innerHTML = totalCanap;
-  
 
   // Calcul du prix total das articles présents dans le panier
   let totalPrixArticles = [];
@@ -157,9 +156,90 @@ if (localStorage.getItem("canapes") != null) {
     let totalPrixCanapes = ajoutCanape[i].quantite * ajoutCanape[i].prix;
     totalPrixArticles.push(totalPrixCanapes);
   } 
-    const reducers = (accumulator, currentValue) => accumulator + currentValue;
-    const totalPrixCanap = totalPrixArticles.reduce(reducers);
+  const reducers = (accumulator, currentValue) => accumulator + currentValue;
+  const totalPrixCanap = totalPrixArticles.reduce(reducers);
 
-    // Injection du nouveau code html "prix total" dans le DOM
-    document.querySelector('#totalPrice').innerHTML = totalPrixCanap;
+  // Injection du nouveau code html "prix total" dans le DOM
+  document.querySelector('#totalPrice').innerHTML = totalPrixCanap;
+
+
+
+
+
+  // Création d'un formulaire type
+  class FormulaireType {
+    constructor(input) {
+      this.firstName = document.querySelector('#firstName').value;
+      this.lastName = document.querySelector('#lastName').value;
+      this.address = document.querySelector('#address').value;
+      this.city = document.querySelector('#city').value;
+      this.email = document.querySelector('#email').value;
+    }
+  }
+
+  const formulaire = new FormulaireType("coordonnees");
+
+  // contrôle des valeurs saisies dans les champs prénom, nom, adresse, ville et email via regex
+  function controleFormulaire() {
+    document.getElementById('firstName').onchange = function () {
+      const firstName = document.getElementById('firstName').value;
+      if (/^[a-zA-Z\-]+$/.test(firstName)) {
+        formulaire.firstName = firstName;
+        localStorage.setItem("contact", JSON.stringify(formulaire));
+        document.querySelector("#firstNameErrorMsg").innerHTML = "";
+        return true;
+      } else {
+        document.getElementById('firstName').value = "";
+        document.querySelector("#firstNameErrorMsg").innerHTML = "Veuillez renseigner un prénom valide.";
+      }
+    }
+
+    document.getElementById('lastName').onchange = function () {
+      const lastName = document.getElementById('lastName').value;
+        if (/^[a-zA-Z\-]+$/.test(lastName)) {
+          formulaire.lastName = lastName;
+          localStorage.setItem("contact", JSON.stringify(formulaire));
+          document.querySelector("#lastNameErrorMsg").innerHTML = "";
+          return true;
+      } else {
+        document.getElementById('lastName').value = "";
+        document.querySelector("#lastNameErrorMsg").innerHTML = "Veuillez renseigner un nom valide.";
+      }
+    }    
+
+    document.getElementById('city').onchange = function () {
+      const city = document.getElementById('city').value;
+        if (/^[a-zA-Z'\-]+$/.test(city)) {
+          formulaire.city = city;
+          localStorage.setItem("contact", JSON.stringify(formulaire));
+          document.querySelector("#cityErrorMsg").innerHTML = "";
+          return true;
+      } else {
+        document.getElementById('city').value = "";
+        document.querySelector("#cityErrorMsg").innerHTML = "Veuillez renseigner une ville valide.";
+      }
+    }
+
+    document.getElementById('email').onchange = function () {
+      const email = document.getElementById('email').value;
+        if (/^[\w\.]+@([\w]+\.)+[\w]{2,4}$/.test(email)) {
+          formulaire.email = email;
+          localStorage.setItem("contact", JSON.stringify(formulaire));
+          document.querySelector("#emailErrorMsg").innerHTML = "";
+          return true;
+      } else {
+        document.getElementById('email').value = "";
+        document.querySelector("#emailErrorMsg").innerHTML = "Veuillez renseigner un E-Mail valide.";
+      }
+    }
+
+    document.getElementById('address').onchange = function () {
+      const address = document.getElementById('address').value;    
+      formulaire.address = address;
+      localStorage.setItem("contact", JSON.stringify(formulaire));
+    }
+  }
+
+  controleFormulaire()
+
 }
