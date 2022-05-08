@@ -5,7 +5,6 @@ fetch('http://localhost:3000/api/products')
   })
   // Création de la fonction qui génère le résultat de la requète API au format json, de la récupération de l'ID dans l'url ainsi que du code html pour afficher les détails du canapé, sélectionner une couleur et une quantité
   .then(function(donnees) {
-    //console.log(donnees);
 
     // Récupération de l'ID dans l'url
     let urlcourante = document.location.href;
@@ -24,12 +23,7 @@ fetch('http://localhost:3000/api/products')
         altImage = canape.altTxt;
 
         // Création du lien vers l'image du canapé
-        imageCanape += '<img src="';
-        imageCanape += image;
-        imageCanape += '" ';
-        imageCanape += 'alt="';
-        imageCanape += altImage;
-        imageCanape += '">';
+        imageCanape += `<img src="${image}" alt="${altImage}">`;
 
         // Ajout des couleurs dans le menu déroulant des couleurs du canapé
         var menuDeroulant=document.getElementById("colors");
@@ -59,7 +53,6 @@ fetch('http://localhost:3000/api/products')
         _id: id,
         couleur: couleurSelectionnee,
         quantite: parseInt(quantiteSelectionnee),
-        prix,
         titre,
         description,
         image,
@@ -67,20 +60,23 @@ fetch('http://localhost:3000/api/products')
       };
 
       // Local storage
-      // stockage de l'id, de la couleur et de la quantité de canapés
+      // stockage de l'id, de la couleur, de la quantité de canapés, du titre, de la description, de l'url de l'image et de l'altImage
       // JSON.parse pour convertir les données au format JSON
       let canapeDansLocalstorage = JSON.parse(localStorage.getItem("canapes"));
 
+      // Message d'erreur si la quantité est inférieure à 1 ou supéreure à 100
       if(quantiteSelectionnee <= 0 || quantiteSelectionnee >= 101) {
         alert("Veuillez entrer une valeur minimum 1 et maximum 100");
         return false;
       }
+      
+      // Message d'erreur si la couleur n'est pas sélectionnée
       if(couleurSelectionnee == "--SVP, choisissez une couleur --") {
           alert("Veuillez sélectionner une couleur dans ce menu déroulant");
           return false;
       }
 
-      //Fonction validation de l'ajout des canapés dans le panier
+      //Fenêtre qui confirme l'ajout des canapés dans le panier et qui permet de se rendre su la page d'accueil en cliquant sur "Annuler" ou d'aller au panier en cliquant sur "OK"
       const validation= () => {
         if(window.confirm( `canapé: ${id} couleur: ${couleurSelectionnee} quantité: ${quantiteSelectionnee} a bien été ajouté au panier. 
         Pour consulter le panier, appuyez sur OK sinon appuyez sur ANNULER pour revenir à l'accueil et continuer vos achats.`)){
