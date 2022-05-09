@@ -3,7 +3,7 @@ fetch('http://localhost:3000/api/products')
   .then(function(reponse) {
     return reponse.json();
   })
-  // Création de la fonction qui génère le résultat de la requète API au format json, de la récupération de l'ID dans l'url ainsi que du code html pour afficher les détails du canapé, sélectionner une couleur et une quantité
+
   .then(function(donnees) {
 
     // Récupération de l'ID dans l'url
