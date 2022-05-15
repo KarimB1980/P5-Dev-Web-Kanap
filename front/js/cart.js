@@ -3,42 +3,50 @@ fetch('http://localhost:3000/api/products')
   .then(function(reponse) {
     return reponse.json();
   })
-
   .then(function(donnees) {
-
     if (localStorage.getItem("canapes") != null) {
       // Récupération du tableau créé dans product.html
       let ajoutCanape = JSON.parse(localStorage.getItem("canapes"));
 
       // Création du code html sous l'ID items pour afficher les canapés
+      // Déclaration des variables
       let listeCanape = '';
       let canape = '';
       let prixTotal = [];
 
       for (canape of ajoutCanape) {
-
         listeCanape += `<article class="cart__item" data-id="${canape._id}" data-color="${canape.couleur}">`;
         listeCanape += '<div class="cart__item__img">';
         listeCanape += `<img src="${canape.image}" alt="${canape.altImage}">`;
         listeCanape += '<div class="cart__item__content"></div>';
-        listeCanape += '<div class="cart__item__content__description">'
+        listeCanape += '<div class="cart__item__content__description">';
         listeCanape += `<h2>${canape.titre}</h2>`;
         listeCanape += `<p>${canape.couleur}</p>`;
 
-        // Création du prix du canapé
-        let produitPrixQuantite = '';
-        for (i = 0; i < donnees.length; i++) {
-          if (donnees[i]._id == canape._id) {
-            prixCana = donnees[i].price;
-            listeCanape += `<p>${prixCana},00 €</p>`;
-            // Calcul du prix total
-            produitPrixQuantite = parseInt(donnees[i].price) * parseInt(canape.quantite);
-            prixTotal.push(produitPrixQuantite);
-          } 
+        // Affichage du prix du canapé
+        function prixCanapes () {
+          let produitPrixQuantite = '';
+          for (i = 0; i < donnees.length; i++) {
+            if (donnees[i]._id == canape._id) {
+              prixCana = donnees[i].price;
+              listeCanape += `<p>${prixCana},00 €</p>`;
+              // Calcul du prix total
+              produitPrixQuantite = parseInt(donnees[i].price) * parseInt(canape.quantite);
+              prixTotal.push(produitPrixQuantite);
+            }
+          }
         }
-        const reducers = (accumulator, currentValue) => accumulator + currentValue;
-        const totalPrix = prixTotal.reduce(reducers);
-        document.querySelector('#totalPrice').innerHTML = totalPrix;
+
+        prixCanapes()
+
+        // Calcul de la somme des valeurs présentes dans le tableau "prixTotal" et injection du résultat dans le DOM
+        function totalPrixCanapes () {
+          const reducers = (accumulator, currentValue) => accumulator + currentValue;
+          const totalPrix = prixTotal.reduce(reducers);
+          document.querySelector('#totalPrice').innerHTML = totalPrix;
+        }
+
+        totalPrixCanapes()
 
         listeCanape += '</div>';
         listeCanape += '<div class="cart__item__content__settings"></div>'
@@ -66,31 +74,35 @@ fetch('http://localhost:3000/api/products')
       localStorage.setItem("products", JSON.stringify(products));
 
       // Supprimer un article du panier avec le bouton "Supprimer"
-      let plusieursCanapes = [];
-      let supprimer = document.querySelectorAll(".deleteItem");
-      supprimer.forEach((supprim) => 
-      {
-        supprim.addEventListener("click", () => 
+      function suppr() {
+        let plusieursCanapes = [];
+        let supprimer = document.querySelectorAll(".deleteItem");
+        supprimer.forEach((supprim) => 
         {
-          var idSupprim = supprim.closest("article");
-          let nombreTypeCanapes = ajoutCanape.length;
-          if (nombreTypeCanapes == 1) {
-            return (localStorage.removeItem("canapes")),
-            location.reload()
-          }
-          else {plusieursCanapes = ajoutCanape.filter((cana) => 
-            {
-              if (idSupprim.dataset.id != cana._id || idSupprim.dataset.color != cana.couleur) {
-                return true
-              }
-            });
-          localStorage.setItem("canapes", JSON.stringify(plusieursCanapes));
-          location.reload();
-          }
+          supprim.addEventListener("click", () => 
+          {
+            var idSupprim = supprim.closest("article");
+            let nombreTypeCanapes = ajoutCanape.length;
+            if (nombreTypeCanapes == 1) {
+              return (localStorage.removeItem("canapes")),
+              location.reload()
+            }
+            else {plusieursCanapes = ajoutCanape.filter((cana) => 
+              {
+                if (idSupprim.dataset.id != cana._id || idSupprim.dataset.color != cana.couleur) {
+                  return true
+                }
+              });
+            localStorage.setItem("canapes", JSON.stringify(plusieursCanapes));
+            location.reload();
+            }
+          });
         });
-      });
+      }
 
-      // Supprimer un article du panier en mettant la quantité à zéro ou modifier la quantité tapant une quantité différente
+      suppr()
+
+      // Supprimer un article du panier en mettant la quantité à zéro
       let supprimerZero = document.querySelectorAll(".itemQuantity");
       supprimerZero.forEach((supprimZero) => 
       {
@@ -112,6 +124,7 @@ fetch('http://localhost:3000/api/products')
           localStorage.setItem("canapes", JSON.stringify(plusieursCanapes));
           location.reload();
           }
+          // Modifier la quantité en tapant une quantité différente
           else if (supprimZero.value > 0) {
             for (i = 0; i < ajoutCanape.length; i++) {
               if (idSupprim.dataset.id == ajoutCanape[i]._id && idSupprim.dataset.color == ajoutCanape[i].couleur) {
@@ -149,8 +162,9 @@ fetch('http://localhost:3000/api/products')
         email : document.querySelector('#email').value
       };
 
-      // contrôle des valeurs saisies dans les champs prénom, nom, adresse, ville et email via regex
+      // Contrôle des valeurs saisies dans les champs prénom, nom, adresse, ville et email via regex
       function controleFormulaire() {
+        // Contrôle du champ "Prénom" en vérifiant qu'il ne comporte que des minuscules, majuscules et tirets
         document.getElementById('firstName').onchange = function () {
           const firstName = document.getElementById('firstName').value;
           if (/^[a-zA-Z\-]+$/.test(firstName)) {
@@ -164,7 +178,7 @@ fetch('http://localhost:3000/api/products')
             document.querySelector("#firstNameErrorMsg").innerHTML = "Veuillez renseigner un prénom valide.";
           }
         }
-
+        // Contrôle du champ "Nom" en vérifiant qu'il ne comporte que des minuscules, majuscules et tirets
         document.getElementById('lastName').onchange = function () {
           const lastName = document.getElementById('lastName').value;
             if (/^[a-zA-Z\-]+$/.test(lastName)) {
@@ -178,7 +192,7 @@ fetch('http://localhost:3000/api/products')
             document.querySelector("#lastNameErrorMsg").innerHTML = "Veuillez renseigner un nom valide.";
           }
         }    
-
+        // Contrôle du champ "Ville" en vérifiant qu'il ne comporte que des minuscules, majuscules, tirets et apostrophes
         document.getElementById('city').onchange = function () {
           const city = document.getElementById('city').value;
             if (/^[a-zA-Z'\-]+$/.test(city)) {
@@ -192,7 +206,7 @@ fetch('http://localhost:3000/api/products')
             document.querySelector("#cityErrorMsg").innerHTML = "Veuillez renseigner une ville valide.";
           }
         }
-
+        // Contrôle du champ "Email" en vérifiant que le format xxxx@xxx.xxx soit respecté avec une terminaison de 1 à 4 caractères
         document.getElementById('email').onchange = function () {
           const email = document.getElementById('email').value;
             if (/^[\w\.]+@([\w]+\.)+[\w]{2,4}$/.test(email)) {
@@ -206,19 +220,19 @@ fetch('http://localhost:3000/api/products')
             document.querySelector("#emailErrorMsg").innerHTML = "Veuillez renseigner un E-Mail valide.";
           }
         }
-
+        // Contrôle de la saisie d'une valeur dans le champ "Adresse" sans restriction
         document.getElementById('address').onchange = function () {
           const address = document.getElementById('address').value;    
           contact.address = address;
           localStorage.setItem("contact", JSON.stringify(contact));
           envoi();
         }
-
+        // Création d'une constante pour les éléments à envoyer à l'API via la méthode POST
         const aEnvoyer = {
           contact,
           products
         }
-
+        // Fonction qui envoie l'objet "contact" et le tableau "products" à l'API via la méthode POST si tous les champs sont complétés
         function envoi() {
           if (contact.firstName != "" && contact.lastName != "" && contact.address != "" && contact.city != "" && contact.email != "" ) { 
             const promesse = fetch("http://localhost:3000/api/products/order", {
@@ -228,6 +242,7 @@ fetch('http://localhost:3000/api/products')
                 "Content-Type": "application/json",
               },
             });
+            // Récupération de l'orderId dans la réponse donnée par l'API
             promesse.then(async (response) => {
               try {
                 const contenu = response.json();
@@ -235,6 +250,7 @@ fetch('http://localhost:3000/api/products')
                   contenuId.then((value) => {
                   let orderIdCommande = value.orderId;
 
+                  // Redirection vers la page "confirmation.html" en ajoutant l'orderId au bout de l'url
                   document.getElementById('order').onclick = function (e) {
                     e.preventDefault()
                     window.location = `${window.location.origin}/front/html/confirmation.html?orderId=${orderIdCommande}`
