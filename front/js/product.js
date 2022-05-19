@@ -1,10 +1,11 @@
 // Requète de l'API
 fetch('http://localhost:3000/api/products')
   .then(function(reponse) {
-    return reponse.json();
+    if (reponse.ok) {
+      return reponse.json();
+    }
   })
   .then(function(donnees) {
-
     // Récupération de l'ID dans l'url
     let urlcourante = document.location.href;
     let url = new URL(urlcourante);
@@ -38,21 +39,22 @@ fetch('http://localhost:3000/api/products')
         }
       }
     }
+
     creationVariables()
 
     // Fonction injection du nouveau code html dans le DOM
     function htmlInfosCanape() {
       document.querySelector(".item__img").innerHTML = imageCanape;
       document.querySelector('#title').innerHTML = titre;
-      document.querySelector('#price').innerHTML = prix;
+      document.querySelector('#price').innerHTML = prix.toFixed(2);
       document.querySelector('#description').innerHTML = description;
     }
 
     htmlInfosCanape();
 
-    // Création des variables pour la quantité de canapés et la couleur choisie
+    // Exécution du code au clic sur le bouton "Ajouter au panier"
     document.getElementById("addToCart").onclick = function () {
-
+      // Création des variables pour la quantité de canapés et la couleur choisie
       var selectCouleur = document.getElementById("colors");
       var couleurSelectionnee = selectCouleur.options[selectCouleur.selectedIndex].text;
       const quantiteSelectionnee = document.getElementById("quantity").value;
@@ -87,7 +89,7 @@ fetch('http://localhost:3000/api/products')
 
       //Fenêtre qui confirme l'ajout des canapés dans le panier et qui permet de se rendre sur la page d'accueil en cliquant sur "Annuler" ou d'aller au panier en cliquant sur "OK"
       const validation = () => {
-        if(window.confirm( `canapé: ${id} couleur: ${couleurSelectionnee} quantité: ${quantiteSelectionnee} a bien été ajouté au panier. 
+        if(window.confirm( `canapé: ${titre} couleur: ${couleurSelectionnee} quantité: ${quantiteSelectionnee} a bien été ajouté au panier. 
         Pour consulter le panier, appuyez sur OK sinon appuyez sur ANNULER pour revenir à l'accueil et continuer vos achats.`)){
           window.location.href = "cart.html";
         }else{

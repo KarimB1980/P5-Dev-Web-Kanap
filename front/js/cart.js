@@ -1,9 +1,12 @@
 // Requète de l'API
 fetch('http://localhost:3000/api/products')
   .then(function(reponse) {
-    return reponse.json();
+    if (reponse.ok) {
+      return reponse.json();
+    }
   })
   .then(function(donnees) {
+    // Exécution du code si le localStorage n'est pas vide
     if (localStorage.getItem("canapes") != null) {
       // Récupération du tableau créé dans product.html
       let ajoutCanape = JSON.parse(localStorage.getItem("canapes"));
@@ -27,10 +30,11 @@ fetch('http://localhost:3000/api/products')
         function prixCanapes () {
           let produitPrixQuantite = '';
           for (i = 0; i < donnees.length; i++) {
+            // Recherche du prix du canapé dans l'API
             if (donnees[i]._id == canape._id) {
               prixCana = donnees[i].price;
-              listeCanape += `<p>${prixCana},00 €</p>`;
-              // Calcul du prix total
+              listeCanape += `<p>${prixCana.toFixed(2)} €</p>`;
+              // Calcul du prix total en faisnat le produit de la quantité par le prix
               produitPrixQuantite = parseInt(donnees[i].price) * parseInt(canape.quantite);
               prixTotal.push(produitPrixQuantite);
             }
@@ -43,7 +47,7 @@ fetch('http://localhost:3000/api/products')
         function totalPrixCanapes () {
           const reducers = (accumulator, currentValue) => accumulator + currentValue;
           const totalPrix = prixTotal.reduce(reducers);
-          document.querySelector('#totalPrice').innerHTML = totalPrix;
+          document.querySelector('#totalPrice').innerHTML = totalPrix.toFixed(2);
         }
 
         totalPrixCanapes()
@@ -76,23 +80,32 @@ fetch('http://localhost:3000/api/products')
       // Supprimer un article du panier avec le bouton "Supprimer"
       function suppr() {
         let plusieursCanapes = [];
+        // Sélection de tous les boutons "Supprimer"
         let supprimer = document.querySelectorAll(".deleteItem");
+        // Sélection du bouton "Supprimé" cliqué
         supprimer.forEach((supprim) => 
         {
           supprim.addEventListener("click", () => 
           {
+            // Recherche de la balise <article> ancètre la plus proche dans le DOM 
             var idSupprim = supprim.closest("article");
+            // Création d'une variable pour le calcul du nombre de types de canapés présents dans le tableau "ajoutCanape" 
             let nombreTypeCanapes = ajoutCanape.length;
+            // Si un seul type de canapé est présent dans le localStorage
             if (nombreTypeCanapes == 1) {
+              // Suppression du localStorage "canapes"
               return (localStorage.removeItem("canapes")),
+              // Actualisation de la page web
               location.reload()
             }
+            // Création d'un filtre "cana" pour récupérer les canapés dont l'id ou la couleur sont différents du type de canapé à supprimer
             else {plusieursCanapes = ajoutCanape.filter((cana) => 
               {
                 if (idSupprim.dataset.id != cana._id || idSupprim.dataset.color != cana.couleur) {
                   return true
                 }
               });
+            // Injection du résultat dans le localStorage et actualisation de la page web 
             localStorage.setItem("canapes", JSON.stringify(plusieursCanapes));
             location.reload();
             }
@@ -104,16 +117,23 @@ fetch('http://localhost:3000/api/products')
 
       // Supprimer un article du panier en mettant la quantité à zéro
       let supprimerZero = document.querySelectorAll(".itemQuantity");
+      // Sélection de la zone de texte "Quantité" mise à "0"
       supprimerZero.forEach((supprimZero) => 
       {
         supprimZero.addEventListener("change", () => 
         {
+          // Recherche de la balise <article> ancètre la plus proche dans le DOM 
           var idSupprim = supprimZero.closest("article");
+          // Création d'une variable pour le calcul du nombre de types de canapés présents dans le tableau "ajoutCanape" 
           let nombreTypeCanapes = ajoutCanape.length;
-          if (supprimZero.value ==0 && nombreTypeCanapes == 1) {
+          // Si la valeur saisie est "0" et qu'un seul type de canapé est présent dans le localStorage
+          if (supprimZero.value == 0 && nombreTypeCanapes == 1) {
+            // Suppession de la clé "canapes" du localStorage
             return (localStorage.removeItem("canapes")),
+            // Actualisation de la page web
             location.reload()
           }
+          // Création d'un filtre "cana" pour récupérer les canapés dont l'id ou la couleur sont différents du type de canapé mis à "0"
           else if (supprimZero.value == 0 && nombreTypeCanapes > 1) {
             plusieursCanapes = ajoutCanape.filter((cana) => 
             {

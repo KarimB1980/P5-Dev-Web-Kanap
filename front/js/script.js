@@ -1,7 +1,9 @@
 // Requète de l'API
 fetch('http://localhost:3000/api/products')
   .then(function(reponse) {
-    return reponse.json();
+    if (reponse.ok) {
+      return reponse.json();
+    }
   })
   .then(function(donnees) {
     // Création du code html sous l'ID items pour afficher les canapés
