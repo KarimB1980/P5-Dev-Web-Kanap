@@ -9,3 +9,5 @@ function recupOrderId() {
 }
 
 recupOrderId()
+
+localStorage.removeItem("canapes");
